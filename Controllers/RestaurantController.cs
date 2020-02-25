@@ -71,16 +71,22 @@ namespace Restaurant_Rater.Controllers
         }
 
         // delete by ID
-        [HttpDelete]
-        public async Task<IHttpActionResult> UpdateRestaurant(Restaurant restaurant)
+        public async Task<IHttpActionResult> DeleteRestaurantById(int id)
         {
-            if (ModelState.IsValid && restaurant != null)
+            Restaurant restaurant = await _dbContext.Restaurants.FindAsync(id);
+            if (restaurant == null)
             {
-                _dbContext.Restaurants.Remove(restaurant);
-                await _dbContext.SaveChangesAsync();
+                return NotFound();
+                //can also use return BadRequest();
+            }
+
+            _dbContext.Restaurants.Remove(restaurant);
+
+            if (await _dbContext.SaveChangesAsync() == 1)
+            {
                 return Ok();
             }
-            return BadRequest(ModelState);
+            return InternalServerError();
         }
     }
 }
