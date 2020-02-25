@@ -14,6 +14,7 @@ namespace Restaurant_Rater.Controllers
     {
         private readonly RestaurantDbContext _dbContext = new RestaurantDbContext();
         //post method
+        [HttpPost]
         public async Task<IHttpActionResult> PostRestaurant(Restaurant restaurant)
         {
             if (ModelState.IsValid && restaurant != null)
@@ -26,7 +27,7 @@ namespace Restaurant_Rater.Controllers
         }
 
         // get all
-
+        [HttpGet]
         public async Task<IHttpActionResult> GetAllContent()
         {
             List<Restaurant> restaurants = await _dbContext.Restaurants.ToListAsync();
@@ -34,7 +35,7 @@ namespace Restaurant_Rater.Controllers
         }
 
         //get by id
-
+        [HttpGet]
         public async Task<IHttpActionResult> GetByID(int id)
         {
             Restaurant restaurant = await _dbContext.Restaurants.FindAsync(id);
@@ -46,9 +47,42 @@ namespace Restaurant_Rater.Controllers
         }
 
         // put (update)
+        [HttpPut]
+        public async Task<IHttpActionResult> UpdateRestaurant([FromUri]int id, [FromBody]Restaurant model)
+        {
+            if (ModelState.IsValid && model != null)
+            {
+                //this is an entity
+                Restaurant restaurant = await _dbContext.Restaurants.FindAsync(id);
 
-        // public async Task<IHttpActionResult> PutUpdate()
+                if (restaurant != null)
+                {
+                    restaurant.Name = model.Name;
+                    restaurant.Rating = model.Rating;
+                    restaurant.Style = model.Style;
+                    restaurant.DollarSigns = model.DollarSigns;
+
+                    await _dbContext.SaveChangesAsync();
+                    return Ok();
+                }
+                return NotFound();
+            }
+            return BadRequest(ModelState);
+        }
 
         // delete by ID
+        [HttpDelete]
+        public async Task<IHttpActionResult> UpdateRestaurant(Restaurant restaurant)
+        {
+            if (ModelState.IsValid && restaurant != null)
+            {
+                _dbContext.Restaurants.Remove(restaurant);
+                await _dbContext.SaveChangesAsync();
+                return Ok();
+            }
+            return BadRequest(ModelState);
+        }
     }
 }
+
+
